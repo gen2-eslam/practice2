@@ -1,37 +1,60 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import { StatusBar, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import  {getUser} from "./axios_service";
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
 import {
   SafeAreaProvider,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
+import { useEffect, useState } from 'react';
+
+
+
 
 function App() {
-  const isDarkMode = useColorScheme() === 'dark';
+  
 
   return (
     <SafeAreaProvider>
-      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <AppContent />
     </SafeAreaProvider>
   );
 }
 
+
 function AppContent() {
-  const safeAreaInsets = useSafeAreaInsets();
+  const [user, setUser] = useState<null | typeof getUser>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<null | Error>(null);
+
+  const fetchUser = async () => {
+    try {
+      setIsLoading(true);
+      const userData = await getUser(1); // Fetch user with ID 1
+      setUser(userData);
+    } catch (err) {
+      setError(err instanceof Error ? err : new Error("Unknown error"));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+
+    fetchUser();
+  }, []);
 
   return (
     <View style={styles.container}>
-      <NewAppScreen
-        templateFileName="App.tsx"
-        safeAreaInsets={safeAreaInsets}
-      />
+      {isLoading && <Text>Loading...</Text>}
+      {error && <Text>Error: {error.message}</Text>}
+      {user && (
+        <View>
+          <Text>{JSON.stringify(user)}</Text>
+    
+        </View>
+      )}
+
+
     </View>
   );
 }
@@ -39,6 +62,9 @@ function AppContent() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5FCFF',
   },
 });
 
