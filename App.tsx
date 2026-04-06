@@ -1,11 +1,12 @@
-import { StatusBar, StyleSheet, Text, useColorScheme, View } from 'react-native';
+import { Button, Image, StyleSheet, Text, View ,Linking } from 'react-native';
 import  {getUser} from "./axios_service";
 
 import {
-  SafeAreaProvider,
+  SafeAreaView,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
-import { useEffect, useState } from 'react';
+import { useEffect, useState ,useCallback } from 'react';
+import { User } from './user_type';
 
 
 
@@ -14,15 +15,15 @@ function App() {
   
 
   return (
-    <SafeAreaProvider>
+    <SafeAreaView style = {[styles.container ,{padding: 20}]}>
       <AppContent />
-    </SafeAreaProvider>
+    </SafeAreaView>
   );
 }
 
 
 function AppContent() {
-  const [user, setUser] = useState<null | typeof getUser>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<null | Error>(null);
 
@@ -48,9 +49,21 @@ function AppContent() {
       {isLoading && <Text>Loading...</Text>}
       {error && <Text>Error: {error.message}</Text>}
       {user && (
-        <View>
-          <Text>{JSON.stringify(user)}</Text>
-    
+        <View style={{ alignItems: 'center'  ,gap: 10}} >
+         
+      <Image
+        source={{ uri: user.avatar_url }}
+        style={{ width: 50, height: 50, borderRadius: 50 }}
+      />
+            <Text>name: {user.name}</Text>
+            <Text>company: {user.company}</Text>
+            <Text>type: {user.type}</Text>
+            <Text>location: {user.location}</Text>
+             <Button title="open git hub profile" onPress={() => {
+              Linking.openURL(user.html_url);
+             }} />
+            
+
         </View>
       )}
 

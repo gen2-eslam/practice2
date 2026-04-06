@@ -1,4 +1,5 @@
 import axios from "axios";
+import { User } from "./user_type";
 //https://api.github.com/users/1
 const instance = axios.create({
   baseURL: "https://api.github.com",
@@ -8,7 +9,7 @@ const instance = axios.create({
 export const getUser = async (userId: number) => {
   try {
     const response = await instance.get(`/users/${userId}`);
-    return response.data;
+    return response.data as User;
   } catch (error) {
     console.error("Error fetching user:", error);
     throw error;
